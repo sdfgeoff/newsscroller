@@ -1,6 +1,7 @@
 import feedparser
 
 import news
+import colors
 
 class RSS(object):
     def __init__(self, url):
@@ -22,7 +23,7 @@ class RSS(object):
                 entry.summary,
                 data.channel.title,
                 created_time,
-                color=1
+                color=colors.GREEN
             )
             news_items.append(new)
 
