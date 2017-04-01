@@ -2,6 +2,7 @@ import time
 import textwrap
 
 import sources
+import random
 
 
 class News():
@@ -35,3 +36,4 @@ class NewsAggregator():
         self.items = list()
         for source in self.sources:
             self.items += source.update()[:self.max_items_per_source]
+        random.shuffle(self.items)

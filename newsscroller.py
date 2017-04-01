@@ -1,8 +1,6 @@
 #!/usr/bin/python3
 import curses
-import random
 
-import sources
 import colors
 import scheduler
 import setting_file
@@ -42,16 +40,6 @@ def setup_colors():
     curses.init_pair(colors.GREEN, curses.COLOR_GREEN, curses.COLOR_BLACK)
     curses.init_pair(colors.CYAN, curses.COLOR_CYAN, curses.COLOR_BLACK)
     curses.init_pair(colors.RED, curses.COLOR_RED, curses.COLOR_BLACK)
-
-
-def generate_news_list(source_list, max_individual):
-    news_items = list()
-    for item in source_list:
-        instance = sources.SOURCE_TABLE[item['type']](*item['data'])
-        news_items += instance.update()[:max_individual]
-
-    random.shuffle(news_items)
-    return news_items
 
 
 class NewsScroller():
@@ -137,6 +125,13 @@ class NewsScroller():
             self.current_article_id = 0
         self.current_article = self.news.items[self.current_article_id]
         self.current_char_id = 0
+
+    def __del__(self):
+        '''Removes all the stuff associated with this news scroller'''
+        self.scheduler.remove(self.type_event)
+        self.scheduler.remove(self.between_event)
+        self.scheduler.remove(self.refresh_news_event)
+
 
 if __name__ == "__main__":
     curses.wrapper(main)
