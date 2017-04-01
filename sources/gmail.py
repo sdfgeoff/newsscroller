@@ -2,6 +2,9 @@
 from __future__ import print_function
 import httplib2
 import os
+import news
+import colors
+import time
 
 from apiclient import discovery
 from oauth2client import client
@@ -37,12 +40,19 @@ class Gmail(object):
         msgList = self._ListMessagesMatchingQuery(self.service, self.user, '')
         for msgId in msgList:
             message = self._getMessage(self.service, self.user, msgId[u'id'])
-            messages.append( message['snippet'])
-        for message in messages:
-            print(' %s' % message)
+            address = [h for h in message['payload']['headers'] if h[u'name'] == 'From'][0][u'value']
+            subject = [h for h in message['payload']['headers'] if h[u'name'] == 'Subject'][0][u'value']
+            body    = message['snippet']
+
+            messages.append(news.News(
+                subject,
+                body,
+                address,
+                time.localtime(float(message['internalDate'])/1000),
+                colors.RED
+            ))
 
         return messages
-
 
     def _get_credentials(self):
         """Gets valid user credentials from storage.
