@@ -6,6 +6,7 @@ import sources
 import colors
 import scheduler
 import setting_file
+import news
 
 
 DEFAULT_SETINGS = {
@@ -61,7 +62,10 @@ class NewsScroller():
         self.scheduler = sched  # A scheduler
         self.settings = settings  # Configuration
 
-        self.source_list = settings['sources']  # List of urls to get news from
+        self.news = news.NewsAggregator(
+            settings['sources'],
+            self.settings['max_from_each_feed']
+        )
 
         self.type_event = scheduler.Event(
             self.type,
@@ -76,17 +80,16 @@ class NewsScroller():
         self.scheduler.register(self.between_event)
 
         self.refresh_news_event = scheduler.Event(
-            self.refresh_news,
+            self.news.update_all,
             time_between=settings['timings']['between_updates']
         )
         self.scheduler.register(self.refresh_news_event)
 
-        self.news = list()
         self.current_article_id = 0
         self.current_article = None
         self.current_char_id = 0
-        self.refresh_news()
-        self.next()
+
+        self.news.update_all()
 
     def type(self):
         '''puts the next character on the screen'''
@@ -130,15 +133,10 @@ class NewsScroller():
         '''moves on to the next article'''
         self.window.clear()
         self.current_article_id += 1
-        if self.current_article_id not in range(len(self.news)):
+        if self.current_article_id not in range(len(self.news.items)):
             self.current_article_id = 0
-        self.current_article = self.news[self.current_article_id]
+        self.current_article = self.news.items[self.current_article_id]
         self.current_char_id = 0
-
-    def refresh_news(self):
-        '''Retches news from the news sources'''
-        self.news = generate_news_list(self.source_list, self.settings['max_from_each_feed'])
-
 
 if __name__ == "__main__":
     curses.wrapper(main)
