@@ -112,7 +112,7 @@ class Gmail(object):
           messages.extend(response['messages'])
 
         return messages
-      except errors.HttpError, error:
+      except errors.HttpError as error:
         print( 'An error occurred: %s' % error)
 
 
@@ -132,5 +132,5 @@ class Gmail(object):
       try:
         message = service.users().messages().get(userId=user_id, id=msg_id).execute()
         return message
-      except errors.HttpError, error:
+      except errors.HttpError as error:
         print('An error occurred: %s' % error)
