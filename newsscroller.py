@@ -83,11 +83,13 @@ class NewsScroller():
         '''puts the next character on the screen'''
         if self.current_article is None:
             self.next()
-
-        data = "{:<40}{:>40}".format(
-            self.current_article.source,
-            self.current_article.time
-        )
+        if self.current_article.time is not None:
+            data = "{:<40}{:>40}".format(
+                self.current_article.source,
+                self.current_article.time
+            )
+        else:
+            data = self.current_article.source
         title = self.current_article.title[:80].center(80, ' ')
         content = self.current_article.text
         col = self.current_article.color

@@ -3,15 +3,20 @@ import textwrap
 
 import sources
 import random
+import unidecode
+import html
 
 
 class News():
     '''Represents a single news article for display'''
     def __init__(self, title, text, source, created_time, color=1):
         self.title = title
-        self.text = textwrap.fill(text, 79)
+        self.text = textwrap.fill(html.unescape(text), 79)
         self.source = source
-        self.time = time.strftime("Published %H:%M %d/%m/%y", created_time)
+        if created_time is not None:
+            self.time = time.strftime("Published %H:%M %d/%m/%y", created_time)
+        else:
+            self.time = None
         self.color = color
 
 
