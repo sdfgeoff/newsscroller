@@ -5,6 +5,8 @@ import colors
 import scheduler
 import setting_file
 import news
+import sys
+import log
 
 
 DEFAULT_SETINGS = {
@@ -25,6 +27,10 @@ def main(stdscr):
     stdscr.clear()
     setup_colors()
     sched = scheduler.Scheduler()
+    logger = log.Logger(open('error.log', 'a'), None)
+    sched.error_handler = logger.log_error
+
+
     settings = setting_file.SettingFile('settings.conf', DEFAULT_SETINGS)
 
     NewsScroller(stdscr, sched, settings)

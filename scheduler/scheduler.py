@@ -1,7 +1,7 @@
 '''Nearly every project needs a scheduler of some sort. This one is designedf
 for the frame-based nature of the BGE'''
 import cProfile
-
+import sys
 
 class Scheduler(object):
     '''A scheduler for running functions. By default one is initilized
@@ -14,6 +14,7 @@ class Scheduler(object):
         self._profile = False
         self.profile = False
         self._profiler = cProfile.Profile()
+        self.error_handler = None
 
     def update_profiled(self):
         '''Runs update_noprofile inside a cProfile profiler'''
@@ -35,12 +36,17 @@ class Scheduler(object):
                     keep = event()
                 except Exception as err:  # pylint: disable=W0703
                     # Catch all errors, so we finish the other events scheduled
-                    errors.append(err)
-                    keep = True  # Don't remove a failing function
+                    exception_info = sys.exc_info()                    
+                    errors.append((err, exception_info))
+                    keep = False  # Remove a failing function
                 if not keep:
                     self.events.remove(event)
         for err in errors:
-            raise err
+            if self.error_handler is None:
+                print("ARRGH!")
+                raise err[0]
+            else:
+                self.error_handler(err[1])
 
     def register(self, event):
         '''Adds an event to the scheduler'''
