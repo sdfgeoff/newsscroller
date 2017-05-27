@@ -37,7 +37,7 @@ class Gmail(object):
         '''Returns a list of messages from the users inbox '''
         messages = list()
 
-        msgList = self._ListMessagesMatchingQuery(self.service, self.user, '')
+        msgList = self._ListMessagesMatchingQuery(self.service, self.user, 'label:unread')
         for msgId in msgList:
             message = self._getMessage(self.service, self.user, msgId[u'id'])
             address = [h for h in message['payload']['headers'] if h[u'name'] == 'From'][0][u'value']
