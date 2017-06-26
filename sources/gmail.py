@@ -27,11 +27,13 @@ APPLICATION_NAME = 'Gmail API Python Quickstart'
 
 
 class Gmail(object):
-    def __init__(self, user):
+    def __init__(self, user, max=None, keywords=None):
         self.user = user
         self.credentials = self._get_credentials()
         self.http = self.credentials.authorize(httplib2.Http())
         self.service = discovery.build('gmail', 'v1', http=self.http)
+        self.max = max
+        self.keywords = keywords
 
     def update(self):
         '''Returns a list of messages from the users inbox '''

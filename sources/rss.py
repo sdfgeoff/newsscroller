@@ -4,8 +4,10 @@ import news
 import colors
 
 class RSS(object):
-    def __init__(self, url):
+    def __init__(self, url, max=None, keywords=None):
         self.url = url
+        self.max = max
+        self.keywords = keywords
 
     def update(self):
         '''Returns a list of news items'''

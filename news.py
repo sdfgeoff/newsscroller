@@ -2,6 +2,7 @@ import time
 import textwrap
 import random
 import html
+import re
 
 import sources
 
@@ -39,5 +40,24 @@ class NewsAggregator():
         '''Refreshes all news sources'''
         self.items = list()
         for source in self.sources:
-            self.items += source.update()[:self.max_items_per_source]
+            news_items = source.update()
+            for news_item in news_items:
+                if self.is_relevant(news_item, source.keywords):
+                    self.items.append(news_item)
+                # Prevent there being too many news items
+                if source.max is not None:
+                    if len(self.items) >= source.max:
+                        break
+                if len(self.items) >= self.max_items_per_source:
+                    break
         random.shuffle(self.items)
+
+    def is_relevant(self, news_item, keyword_list):
+        '''Returns 'True' if the source looks relevant based on keywords'''
+        if keyword_list == [] or keyword_list is None:
+            return True
+        keyword_str = ""
+        for keyword in keyword_list:
+            keyword_str += keyword + "|"
+        regex = re.compile("(({})\s)+".format(keyword_str[:-1]), re.IGNORECASE)
+        return regex.fullmatch(news_item.title) or regex.fullmatch(news_item.text)
