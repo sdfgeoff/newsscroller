@@ -60,4 +60,7 @@ class NewsAggregator():
         for keyword in keyword_list:
             keyword_str += keyword + "|"
         regex = re.compile("(({})\s)+".format(keyword_str[:-1]), re.IGNORECASE)
-        return regex.fullmatch(news_item.title) or regex.fullmatch(news_item.text)
+        if regex.match(news_item.title) is not None or \
+                regex.match(news_item.text) is not None:
+            return True
+        return False
